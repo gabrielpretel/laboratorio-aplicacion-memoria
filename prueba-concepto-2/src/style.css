@@ -1,0 +1,20 @@
+.carta {
+  background-color: #aee2ff;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.6s;
+  transform-style: preserve-3d;
+
+  & img {
+    max-width: 5rem;
+  }
+}
+
+.carta-volteada {
+  background-color: #b799fe;
+  transform: rotateY(180deg);
+}
