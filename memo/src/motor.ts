@@ -17,11 +17,13 @@ export const sePuedeVoltearLaCarta = (
   tablero: Tablero,
   indice: number
 ): boolean => {
-  return (!tablero.cartas[indice].estaVuelta || tablero.cartas[indice].estaVuelta === undefined) &&
-    !tablero.cartas[indice].encontrada ||
-    (tablero.indiceCartaVolteadaA && tablero.indiceCartaVolteadaA && tablero.indiceCartaVolteadaB)
-    ? true
-    : false;
+  if (indice !== undefined && tablero.cartas[indice]) {
+    return !tablero.cartas[indice].estaVuelta &&
+      !tablero.cartas[indice].encontrada
+      ? true
+      : false;
+  }
+  return false; // Devuelve false si el índice no es válido o tablero.cartas[indice] no está definido
 };
 
 // Dos cartas son pareja si en el array de tablero de cada una tienen el mismo id
@@ -32,9 +34,13 @@ export const sonPareja = (
   tablero: Tablero
 ): boolean => {
   // No esta funcionando bien, repasar
-  return tablero.cartas.every((carta) => {
-    indiceA === carta.idFoto && indiceB === carta.idFoto;
-  });
+  console.log("idFoto A:", tablero.cartas[indiceA].idFoto);
+  console.log("idFoto B:", tablero.cartas[indiceB].idFoto);
+  if (tablero.cartas[indiceA].idFoto === tablero.cartas[indiceB].idFoto) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 /*
@@ -80,4 +86,8 @@ export const iniciaPartida = (tablero: Tablero): void => {
   tablero.estadoPartida === "CeroCartasLevantadas";
   tablero.indiceCartaVolteadaA === undefined;
   tablero.indiceCartaVolteadaB === undefined;
+
+  cartasBarajadas.forEach((carta) => {
+    carta.estaVuelta = false;
+  });
 };
