@@ -9,7 +9,7 @@ export const barajarCartas = (cartas: Carta[]): Carta[] => {
     .map(({ value }) => value);
 };
 
-export const cartasBarajadas = barajarCartas([...cartas]);
+export let cartasBarajadas = barajarCartas([...cartas]);
 
 // Una carta se puede voltear si no está encontrada y no está ya volteada, o no hay dos cartas ya volteadas
 
@@ -17,15 +17,11 @@ export const sePuedeVoltearLaCarta = (
   tablero: Tablero,
   indice: number
 ): boolean => {
-  if (
-    !tablero.indiceCartaVolteadaA ||
-    !tablero.indiceCartaVolteadaB ||
-    !tablero.cartas[indice].encontrada
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  return (!tablero.cartas[indice].estaVuelta || tablero.cartas[indice].estaVuelta === undefined) &&
+    !tablero.cartas[indice].encontrada ||
+    (tablero.indiceCartaVolteadaA && tablero.indiceCartaVolteadaA && tablero.indiceCartaVolteadaB)
+    ? true
+    : false;
 };
 
 // Dos cartas son pareja si en el array de tablero de cada una tienen el mismo id
@@ -78,7 +74,10 @@ export const esPartidaCompleta = (tablero: Tablero): boolean => {
 // Iniciar partida
 
 export const iniciaPartida = (tablero: Tablero): void => {
-  barajarCartas(tablero.cartas);
   // poner las cartas barajadas
+
+  cartasBarajadas = barajarCartas([...cartas]);
   tablero.estadoPartida === "CeroCartasLevantadas";
+  tablero.indiceCartaVolteadaA === undefined;
+  tablero.indiceCartaVolteadaB === undefined;
 };

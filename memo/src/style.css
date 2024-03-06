@@ -1,28 +1,100 @@
+:root {
+  --primary-font: "Madimi One", sans-serif;
+  --primary-color: #aee2ff;
+  --secondary-color: #b799ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1 {
+  color: #b799fe;
+  text-align: center;
+}
+
+#app {
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  font-family: var(--primary-font);
+  height: 100vh;
+  background-color: #c5fcee;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  max-width: 28rem;
   padding: 2rem;
+  justify-content: center;
+  align-content: center;
 }
 
 .carta {
-  background-color: #aee2ff;
+  background-color: var(--primary-color);
   width: 7rem;
   height: 7rem;
   border-radius: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.6s;
+  transition: all 0.3s;
   transform-style: preserve-3d;
+  cursor: pointer;
 
   & img {
     max-width: 5rem;
   }
 }
 
+@keyframes flotar {
+  0% {
+    transform: translateY(0) rotate(0) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) rotate(3deg) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) rotate(0) scale(1);
+  }
+}
+
+.carta-no-volteada {
+  &:hover {
+    animation: flotar 1s infinite ease-in-out;
+  }
+}
+
 .carta-volteada {
-  background-color: #b799fe;
+  background-color: var(--secondary-color);
   transform: rotateY(180deg);
+  transition: all ease-in 0.3s;
+
+  &:hover {
+    animation: none;
+  }
+}
+
+.boton {
+  background-color: var(--secondary-color);
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  max-width: 12rem;
+  margin: 0 auto;
+  transition: all ease 0.3s;
+  margin-top: 2rem;
+
+  &:hover {
+    background-color: var(--primary-color);
+    rotate: 3deg;
+    -webkit-box-shadow: 5px 5px 0px 0px rgba(183, 153, 254, 1);
+    -moz-box-shadow: 5px 5px 0px 0px rgba(183, 153, 254, 1);
+    box-shadow: 5px 5px 0px 0px rgba(183, 153, 254, 1);
+  }
 }
