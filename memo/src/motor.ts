@@ -1,4 +1,4 @@
-import { cartas, Carta, Tablero } from "./modelo";
+import { cartas, Carta, Tablero, tablero } from "./modelo";
 
 // Método para barajar las cartas
 
@@ -11,15 +11,20 @@ export const barajarCartas = (cartas: Carta[]): Carta[] => {
 
 export let cartasBarajadas = barajarCartas([...cartas]);
 
+export let tableroBarajado = {
+  ...tablero,
+  cartas: cartasBarajadas,
+};
+
 // Una carta se puede voltear si no está encontrada y no está ya volteada, o no hay dos cartas ya volteadas
 
 export const sePuedeVoltearLaCarta = (
-  tablero: Tablero,
+  tableroBarajado: Tablero,
   indice: number
 ): boolean => {
-  if (indice !== undefined && tablero.cartas[indice]) {
-    return !tablero.cartas[indice].estaVuelta &&
-      !tablero.cartas[indice].encontrada
+  if (indice !== undefined && tableroBarajado.cartas[indice]) {
+    return !tableroBarajado.cartas[indice].estaVuelta &&
+      !tableroBarajado.cartas[indice].encontrada || tableroBarajado.estadoPartida !== "DosCartasLevantadas"
       ? true
       : false;
   }
@@ -31,12 +36,15 @@ export const sePuedeVoltearLaCarta = (
 export const sonPareja = (
   indiceA: number,
   indiceB: number,
-  tablero: Tablero
+  tableroBarajado: Tablero
 ): boolean => {
   // No esta funcionando bien, repasar
-  console.log("idFoto A:", tablero.cartas[indiceA].idFoto);
-  console.log("idFoto B:", tablero.cartas[indiceB].idFoto);
-  if (tablero.cartas[indiceA].idFoto === tablero.cartas[indiceB].idFoto) {
+  console.log("idFoto A:", tableroBarajado.cartas[indiceA].idFoto);
+  console.log("idFoto B:", tableroBarajado.cartas[indiceB].idFoto);
+  if (
+    tableroBarajado.cartas[indiceA].idFoto ===
+    tableroBarajado.cartas[indiceB].idFoto
+  ) {
     return true;
   } else {
     return false;

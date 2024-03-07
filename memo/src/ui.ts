@@ -1,20 +1,21 @@
-import { tablero, crearTableroInicial } from "./modelo";
+import { crearTableroInicial } from "./modelo";
 import {
   iniciaPartida,
   cartasBarajadas,
   sePuedeVoltearLaCarta,
   sonPareja,
+  tableroBarajado,
 } from "./motor";
 
 const divsCarta = document.querySelectorAll(".carta");
 const imagenCarta = document.querySelectorAll("img");
 const botonIniciarPartida = document.getElementById("boton-inicio-partida");
 let { cartas, estadoPartida, indiceCartaVolteadaA, indiceCartaVolteadaB } =
-  tablero;
+  tableroBarajado;
 
 botonIniciarPartida?.addEventListener("click", () => {
   crearTableroInicial();
-  iniciaPartida(tablero);
+  iniciaPartida(tableroBarajado);
   resetearDivsCartas();
 });
 
@@ -30,17 +31,18 @@ const resetearDivsCartas = () => {
 };
 
 divsCarta.forEach((div) => {
-  div.addEventListener("click", (event: Event) => {
+  div.addEventListener("click", (event) => {
+    
     const target = event.target as HTMLElement;
     const indiceId = target.dataset.indiceId;
     let indiceIdNumber;
-    let volteable;
-
+    let volteable = true;
+    
     if (indiceId) {
       indiceIdNumber = parseInt(indiceId);
-      volteable = sePuedeVoltearLaCarta(tablero, indiceIdNumber);
+      volteable = sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumber);
     }
-    // console.log({ indiceId, indiceIdNumber, volteable });
+    console.log(estadoPartida);
     if (
       indiceId !== undefined &&
       indiceId !== null &&
@@ -48,36 +50,88 @@ divsCarta.forEach((div) => {
       indiceIdNumber !== undefined
     ) {
       cambiarImagen(indiceId);
-      // Actualiza la propiedad estaVuelta de la carta a true
       cartas[indiceIdNumber] = {
         ...cartas[indiceIdNumber],
         estaVuelta: true,
       };
 
-      // Actualiza el estado a una carta levantada
       if (estadoPartida === "UnaCartaLevantada") {
         estadoPartida = "DosCartasLevantadas";
         indiceCartaVolteadaB = indiceIdNumber;
+        console.log(indiceCartaVolteadaB);
+        console.log("Aqui deberia haber cambiado a Dos Cartas", estadoPartida);
 
-        // TODO: Comprobar si las dos cartas son iguales
-        if (indiceCartaVolteadaA && indiceCartaVolteadaB) {
-          const parejas = sonPareja(
+        let parejas = false;
+
+        if (
+          indiceCartaVolteadaA &&
+          indiceCartaVolteadaB &&
+          parejas !== undefined
+        ) {
+          parejas = sonPareja(
             indiceCartaVolteadaA,
             indiceCartaVolteadaB,
-            tablero
+            tableroBarajado
           );
-
-          if (parejas === true){
-            console.log("son pareja");
-          }else{
-            // Voltear las cartas al origen y reestablecer valores
-            console.log ("no son pareja");
-            estadoPartida = "CeroCartasLevantadas";
-            indiceCartaVolteadaA = undefined;
-            indiceCartaVolteadaB = undefined;
-          }
         }
-      }
+
+        if (parejas === true && indiceCartaVolteadaA) {
+          console.log("son pareja");
+          cartas[indiceCartaVolteadaA].encontrada = true;
+          cartas[indiceCartaVolteadaB].encontrada = true;
+        } else {
+          console.log("no son pareja");
+
+          const indiceA = indiceCartaVolteadaA;
+          const indiceB = indiceCartaVolteadaB;
+
+          estadoPartida = "CeroCartasLevantadas";
+          indiceCartaVolteadaA = undefined;
+          indiceCartaVolteadaB = undefined;
+          if (indiceA && indiceB) {
+            cartas[indiceA] = {
+              ...cartas[indiceA],
+              estaVuelta: false,
+            };
+            cartas[indiceB] = {
+              ...cartas[indiceB],
+              estaVuelta: false,
+            };
+          }
+
+          const indiceDivA = `div[data-indice-id="${indiceA}"]`;
+          const divConIndiceA = document.querySelector(indiceDivA);
+
+          //Devolver las clases iniciales a las cartas con indiceA y B
+
+          if (divConIndiceA) {
+            setTimeout(() => {
+              const indiceCapturadoA = `img[data-indice-id="${indiceA}"]`;
+              const indiceCapturadoB = `img[data-indice-id="${indiceB}"]`;
+              const imgConIndiceA = document.querySelector(indiceCapturadoA);
+              const imgConIndiceB = document.querySelector(indiceCapturadoB);
+
+              if (divConIndiceA) {
+                target.classList.remove("carta-volteada");
+                target.classList.add("carta-no-volteada");
+                divConIndiceA.classList.remove("carta-volteada");
+                divConIndiceA.classList.add("carta-no-volteada");
+              }
+              if (
+                imgConIndiceA &&
+                imgConIndiceB &&
+                imgConIndiceA instanceof HTMLImageElement &&
+                imgConIndiceB instanceof HTMLImageElement
+              ) {
+                imgConIndiceA.src = "";
+                imgConIndiceB.src = "";
+              }
+            }, 1000);
+          }
+
+          // Reestablecer indices
+        }
+      } // Esta llave cierra el if (estadoPartida === "UnaCartaLevantada")
 
       if (
         estadoPartida === "CeroCartasLevantadas" ||
@@ -85,13 +139,11 @@ divsCarta.forEach((div) => {
       ) {
         estadoPartida = "UnaCartaLevantada";
         indiceCartaVolteadaA = indiceIdNumber;
+        console.log(indiceCartaVolteadaA);
       }
 
-      console.log(estadoPartida);
-      console.log(indiceCartaVolteadaA);
-      console.log(indiceCartaVolteadaB);
+      
 
-      // cambia la clase de la carta volteada
       target.classList.remove("carta-no-volteada");
       setTimeout(() => {
         target.classList.add("carta-volteada");
