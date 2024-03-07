@@ -48,7 +48,7 @@ h1 {
   }
 }
 
-@keyframes flotar {
+/* @keyframes flotar {
   0% {
     transform: translateY(0) rotate(0) scale(1);
   }
@@ -58,7 +58,7 @@ h1 {
   100% {
     transform: translateY(0) rotate(0) scale(1);
   }
-}
+} */
 
 .carta-no-volteada {
   &:hover {

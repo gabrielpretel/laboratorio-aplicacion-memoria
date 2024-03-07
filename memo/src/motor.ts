@@ -23,10 +23,15 @@ export const sePuedeVoltearLaCarta = (
   indice: number
 ): boolean => {
   if (indice !== undefined && tableroBarajado.cartas[indice]) {
-    return !tableroBarajado.cartas[indice].estaVuelta &&
-      !tableroBarajado.cartas[indice].encontrada || tableroBarajado.estadoPartida !== "DosCartasLevantadas"
-      ? true
-      : false;
+    if (
+      (tableroBarajado.cartas[indice].estaVuelta === false &&
+        tableroBarajado.cartas[indice].encontrada === false) ||
+      tableroBarajado.estadoPartida === "DosCartasLevantadas"
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
   return false; // Devuelve false si el índice no es válido o tablero.cartas[indice] no está definido
 };
@@ -88,14 +93,10 @@ export const esPartidaCompleta = (tablero: Tablero): boolean => {
 // Iniciar partida
 
 export const iniciaPartida = (tablero: Tablero): void => {
-  // poner las cartas barajadas
-
   cartasBarajadas = barajarCartas([...cartas]);
-  tablero.estadoPartida === "CeroCartasLevantadas";
-  tablero.indiceCartaVolteadaA === undefined;
-  tablero.indiceCartaVolteadaB === undefined;
-
-  cartasBarajadas.forEach((carta) => {
-    carta.estaVuelta = false;
-  });
+  tableroBarajado = {
+    ...tablero,
+    cartas: cartasBarajadas,
+    estadoPartida: "CeroCartasLevantadas",
+  };
 };
