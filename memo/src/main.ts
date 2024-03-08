@@ -1,5 +1,10 @@
+import { resetearDivsCartas } from "./ui";
+import { iniciaPartida } from "./motor";
+import { tableroBarajado } from "./motor";
 
-import './ui';
+const botonIniciarPartida = document.getElementById("boton-inicio-partida");
 
-
-
+botonIniciarPartida?.addEventListener("click", () => {
+  iniciaPartida(tableroBarajado);
+  resetearDivsCartas();
+});

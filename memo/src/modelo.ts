@@ -10,7 +10,7 @@ interface InfoCarta {
   imagen: string;
 }
 
-type EstadoPartida =
+export type EstadoPartida =
   | "PartidaNoIniciada"
   | "CeroCartasLevantadas"
   | "UnaCartaLevantada"

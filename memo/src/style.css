@@ -48,7 +48,7 @@ h1 {
   }
 }
 
-/* @keyframes flotar {
+@keyframes flotar {
   0% {
     transform: translateY(0) rotate(0) scale(1);
   }
@@ -58,21 +58,36 @@ h1 {
   100% {
     transform: translateY(0) rotate(0) scale(1);
   }
-} */
+}
+@keyframes zoom-in-out {
+  0% {
+    transform: scale(1.05) rotateY(180deg);
+  }
+  50% {
+    transform: scale(1.1) rotateY(180deg);
+    box-shadow: 10px 10px 57px -7px rgba(249, 248, 113, 1);
+  }
+  100% {
+    transform: scale(1) rotateY(180deg);
+    box-shadow: none;
+  }
+}
 
 .carta-no-volteada {
   &:hover {
-    animation: flotar 1s infinite ease-in-out;
+    box-shadow: 5px 5px 0px 0px rgba(183, 153, 254, 1);
   }
 }
 
 .carta-volteada {
   background-color: var(--secondary-color);
   transform: rotateY(180deg);
-  transition: all ease-in 0.3s;
 
   &:hover {
     animation: none;
+  }
+  &.encontrada {
+    animation: zoom-in-out 1.5s ease-in-out;
   }
 }
 

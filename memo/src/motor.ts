@@ -1,4 +1,4 @@
-import { cartas, Carta, Tablero, tablero } from "./modelo";
+import { Carta, Tablero, tablero, EstadoPartida } from "./modelo";
 
 // Método para barajar las cartas
 
@@ -9,11 +9,48 @@ export const barajarCartas = (cartas: Carta[]): Carta[] => {
     .map(({ value }) => value);
 };
 
-export let cartasBarajadas = barajarCartas([...cartas]);
+export let cartasBarajadas = barajarCartas([...tablero.cartas]);
 
 export let tableroBarajado = {
   ...tablero,
   cartas: cartasBarajadas,
+};
+
+let { cartas } = tableroBarajado;
+
+export const cambioEstadoPartida = (
+  tablero: Tablero,
+  estado: EstadoPartida
+) => {
+  tablero.estadoPartida = estado;
+};
+
+export const convertirIndiceEnNumero = (indice: string): number => {
+  return parseInt(indice);
+};
+
+export const cambiarEstaVuelta = (carta: number) => {
+  cartas[carta] = {
+    ...cartas[carta],
+    estaVuelta: true,
+  };
+};
+
+export const cambioEstaVueltaFalse = (
+  indiceA: number,
+  indiceB: number
+): void => {
+  if (cartas[indiceA] && cartas[indiceB]) {
+    cartas[indiceA].estaVuelta = false;
+    cartas[indiceB].estaVuelta = false;
+  } else {
+    console.error("Uno o ambos índices son inválidos.", { indiceA, indiceB });
+  }
+};
+
+export const resetearIndices = (): void => {
+  tableroBarajado.indiceCartaVolteadaA = undefined;
+  tableroBarajado.indiceCartaVolteadaB = undefined;
 };
 
 // Una carta se puede voltear si no está encontrada y no está ya volteada, o no hay dos cartas ya volteadas
@@ -23,17 +60,14 @@ export const sePuedeVoltearLaCarta = (
   indice: number
 ): boolean => {
   if (indice !== undefined && tableroBarajado.cartas[indice]) {
-    if (
-      (tableroBarajado.cartas[indice].estaVuelta === false &&
-        tableroBarajado.cartas[indice].encontrada === false) ||
+    const carta = tableroBarajado.cartas[indice];
+    return (
+      (carta.estaVuelta === false && carta.encontrada === false) ||
       tableroBarajado.estadoPartida === "DosCartasLevantadas"
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    );
   }
-  return false; // Devuelve false si el índice no es válido o tablero.cartas[indice] no está definido
+
+  return false;
 };
 
 // Dos cartas son pareja si en el array de tablero de cada una tienen el mismo id
@@ -43,14 +77,10 @@ export const sonPareja = (
   indiceB: number,
   tableroBarajado: Tablero
 ): boolean => {
-  if (
+  return (
     tableroBarajado.cartas[indiceA].idFoto ===
     tableroBarajado.cartas[indiceB].idFoto
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  );
 };
 
 /*
@@ -76,7 +106,6 @@ export const parejaNoEncontrada = (
   tablero.cartas[indiceA].estaVuelta = false;
   tablero.cartas[indiceB].encontrada = false;
 };
-console.log(parejaNoEncontrada);
 
 //Comprobar partida
 
@@ -87,7 +116,7 @@ export const esPartidaCompleta = (tablero: Tablero): boolean => {
 // Iniciar partida
 
 export const iniciaPartida = (tableroAResetear: Tablero): void => {
-  cartasBarajadas = barajarCartas([...cartas]);
+  const cartasBarajadas = barajarCartas([...tablero.cartas]);
   tableroBarajado = {
     ...tableroAResetear,
     cartas: cartasBarajadas,

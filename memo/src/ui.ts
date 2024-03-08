@@ -1,26 +1,23 @@
 import {
-  iniciaPartida,
   sePuedeVoltearLaCarta,
   sonPareja,
   tableroBarajado,
   parejaEncontrada,
   parejaNoEncontrada,
   esPartidaCompleta,
+  cambioEstadoPartida,
+  convertirIndiceEnNumero,
+  cambiarEstaVuelta,
+  resetearIndices,
+  cambioEstaVueltaFalse,
 } from "./motor";
 
 const divsCarta = document.querySelectorAll(".carta");
 const imagenCarta = document.querySelectorAll("img");
-const botonIniciarPartida = document.getElementById("boton-inicio-partida");
-const { cartas } = tableroBarajado;
 
-botonIniciarPartida?.addEventListener("click", () => {
-  iniciaPartida(tableroBarajado);
-  resetearDivsCartas();
-});
-
-const resetearDivsCartas = () => {
+export const resetearDivsCartas = () => {
   divsCarta.forEach((div) => {
-    div.classList.remove("carta-volteada");
+    div.classList.remove("carta-volteada", "encontrada");
     div.classList.add("carta-no-volteada");
   });
 
@@ -29,19 +26,13 @@ const resetearDivsCartas = () => {
   });
 };
 
-// Hasta aqui esta todo correcto
-
-const convertirIndiceEnNumero = (indice: string): number => {
-  return parseInt(indice);
-};
-
 const cambiarClaseLevantada = (carta: number): void => {
   setTimeout(() => {
     const indiceDivA = `div[data-indice-id="${carta}"]`;
     const divConIndiceA = document.querySelector(indiceDivA);
     divConIndiceA?.classList.add("carta-volteada");
     divConIndiceA?.classList.remove("carta-no-volteada");
-  }, 10);
+  }, 100);
 };
 
 const cambiarClaseVolteada = (carta: number): void => {
@@ -54,10 +45,11 @@ const cambiarClaseVolteada = (carta: number): void => {
 };
 
 divsCarta.forEach((div) => {
-  div.addEventListener("click", (event) => {
+  div.addEventListener("click", (event): void => {
     const targetCarta = event.target as HTMLElement;
     const indiceId = targetCarta.dataset.indiceId;
-    let indiceIdNumero;
+    let indiceIdNumero: number | undefined;
+
     let volteable = false;
 
     if (indiceId && indiceId !== undefined) {
@@ -71,22 +63,15 @@ divsCarta.forEach((div) => {
       indiceIdNumero !== undefined &&
       tableroBarajado.estadoPartida === "UnaCartaLevantada"
     ) {
-      //Guardamos el indice en una nueva variable
       const cartaB = indiceIdNumero;
 
-      //Cambiamos la imagen a la de la carta
       cambiarImagen(cartaB);
-
-      //añadimos clase volteada y quitamos la no volteada, el timeOut es para que la transicion y la animacion del hover no entren en conflicto
       cambiarClaseLevantada(cartaB);
 
       //Actualizamos la propiedad estaVuelta de la cartaB
-      cartas[cartaB] = {
-        ...cartas[cartaB],
-        estaVuelta: true,
-      };
+      cambiarEstaVuelta(cartaB);
 
-      //Actualizamos el estado de la partida y añadimos la cartaB al tablero
+      // Añadimos la cartaB al tablero
       tableroBarajado.indiceCartaVolteadaB = cartaB;
 
       // Comprobamos si las cartas levantadas son pareja o no
@@ -98,9 +83,12 @@ divsCarta.forEach((div) => {
         );
         //Actualizar la propiedad encontrada de ambas cartas
         if (siSonPareja) {
-          console.log("Sí son pareja, has acertado");
           parejaEncontrada(
             tableroBarajado,
+            tableroBarajado.indiceCartaVolteadaA,
+            tableroBarajado.indiceCartaVolteadaB
+          );
+          iluminarCartasEncontrada(
             tableroBarajado.indiceCartaVolteadaA,
             tableroBarajado.indiceCartaVolteadaB
           );
@@ -111,14 +99,12 @@ divsCarta.forEach((div) => {
             console.log("HAS GANADO!");
           }
           // Cambiamos el estado de la partida para poder continuar
-          tableroBarajado.estadoPartida = "CeroCartasLevantadas";
+          cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
 
           //Reseteamos los indices
-          tableroBarajado.indiceCartaVolteadaA = undefined;
-          tableroBarajado.indiceCartaVolteadaB = undefined;
+          resetearIndices();
           indiceIdNumero = undefined;
         } else {
-          console.log("No son pareja");
           parejaNoEncontrada(
             tableroBarajado,
             tableroBarajado.indiceCartaVolteadaA,
@@ -139,15 +125,17 @@ divsCarta.forEach((div) => {
                 tableroBarajado.indiceCartaVolteadaB
               );
               //Cambiamos el estado de la partida a CeroCartasLevantadas
-              tableroBarajado.estadoPartida = "CeroCartasLevantadas";
+              cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
 
               // Y cambiamos la propiedad esta vuelta de cada carta a false
-              cartas[tableroBarajado.indiceCartaVolteadaA].estaVuelta = false;
-              cartas[tableroBarajado.indiceCartaVolteadaB].estaVuelta = false;
+
+              cambioEstaVueltaFalse(
+                tableroBarajado.indiceCartaVolteadaA,
+                tableroBarajado.indiceCartaVolteadaB
+              );
 
               //Reseteamos los indices
-              tableroBarajado.indiceCartaVolteadaA = undefined;
-              tableroBarajado.indiceCartaVolteadaB = undefined;
+              resetearIndices();
               indiceIdNumero = undefined;
             }
           }, 1000);
@@ -165,22 +153,15 @@ divsCarta.forEach((div) => {
       //Guardamos el indice en una nueva variable
       const cartaA = indiceIdNumero;
 
-      //Cambiamos la imagen a la de la carta
       cambiarImagen(cartaA);
-
-      //añadimos clase volteada y quitamos la no volteada, el timeOut es para que la transicion y la animacion del hover no entren en conflicto
       cambiarClaseLevantada(cartaA);
 
       //Actualizamos la propiedad estaVuelta de la cartaA
-      cartas[cartaA] = {
-        ...cartas[cartaA],
-        estaVuelta: true,
-      };
+      cambiarEstaVuelta(cartaA);
 
       //Actualizamos el estado de la partida y añadimos la cartaA al tablero
       tableroBarajado.indiceCartaVolteadaA = cartaA;
-      tableroBarajado.estadoPartida = "UnaCartaLevantada";
-      console.log(tableroBarajado.estadoPartida);
+      cambioEstadoPartida(tableroBarajado, "UnaCartaLevantada");
     }
 
     // Tercer click con dos cartas ya levantadas
@@ -191,7 +172,7 @@ divsCarta.forEach((div) => {
       tableroBarajado.indiceCartaVolteadaA !== undefined &&
       tableroBarajado.indiceCartaVolteadaB !== undefined
     ) {
-      tableroBarajado.estadoPartida = "DosCartasLevantadas";
+      cambioEstadoPartida(tableroBarajado, "DosCartasLevantadas");
     }
   });
 });
@@ -201,9 +182,9 @@ const cambiarImagen = (indice: number): void => {
     const indiceCapturado = `img[data-indice-id="${indice}"]`;
     const divConIndice = document.querySelector(indiceCapturado);
     if (divConIndice && divConIndice instanceof HTMLImageElement) {
-      divConIndice.src = cartas[indice].imagen;
+      divConIndice.src = tableroBarajado.cartas[indice].imagen;
     }
-  }, 200);
+  }, 300);
 };
 
 const cambiarImagenVuelta = (indiceA: number, indiceB: number): void => {
@@ -220,4 +201,13 @@ const cambiarImagenVuelta = (indiceA: number, indiceB: number): void => {
     divConIndiceA.src = "";
     divConIndiceB.src = "";
   }
+};
+
+const iluminarCartasEncontrada = (indiceA: number, indiceB: number): void => {
+  const indiceCapturadoA = `div[data-indice-id="${indiceA}"]`;
+  const divConIndiceA = document.querySelector(indiceCapturadoA);
+  const indiceCapturadoB = `div[data-indice-id="${indiceB}"]`;
+  const divConIndiceB = document.querySelector(indiceCapturadoB);
+  divConIndiceA?.classList.add("encontrada");
+  divConIndiceB?.classList.add("encontrada");
 };
