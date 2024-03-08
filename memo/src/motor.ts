@@ -43,9 +43,6 @@ export const sonPareja = (
   indiceB: number,
   tableroBarajado: Tablero
 ): boolean => {
-  // No esta funcionando bien, repasar
-  console.log("idFoto A:", tableroBarajado.cartas[indiceA].idFoto);
-  console.log("idFoto B:", tableroBarajado.cartas[indiceB].idFoto);
   if (
     tableroBarajado.cartas[indiceA].idFoto ===
     tableroBarajado.cartas[indiceB].idFoto
@@ -59,22 +56,19 @@ export const sonPareja = (
 /*
   Aquí asumimos ya que son pareja, lo que hacemos es marcarlas como encontradas y comprobar si la partida esta completa.
 */
-const parejaEncontrada = (
+export const parejaEncontrada = (
   tablero: Tablero,
   indiceA: number,
   indiceB: number
 ): void => {
   tablero.cartas[indiceA].encontrada = true;
   tablero.cartas[indiceB].encontrada = true;
-  // esPartidaCompletada();
 };
-
-console.log(parejaEncontrada);
 
 /*
   Aquí asumimos que no son pareja y las volvemos a poner boca abajo
 */
-const parejaNoEncontrada = (
+export const parejaNoEncontrada = (
   tablero: Tablero,
   indiceA: number,
   indiceB: number
@@ -92,11 +86,14 @@ export const esPartidaCompleta = (tablero: Tablero): boolean => {
 
 // Iniciar partida
 
-export const iniciaPartida = (tablero: Tablero): void => {
+export const iniciaPartida = (tableroAResetear: Tablero): void => {
   cartasBarajadas = barajarCartas([...cartas]);
   tableroBarajado = {
-    ...tablero,
+    ...tableroAResetear,
     cartas: cartasBarajadas,
     estadoPartida: "CeroCartasLevantadas",
+    indiceCartaVolteadaA: undefined,
+    indiceCartaVolteadaB: undefined,
   };
+  console.log(tableroBarajado);
 };
