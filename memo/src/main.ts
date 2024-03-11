@@ -1,10 +1,10 @@
-import { resetearDivsCartas } from "./ui";
-import { iniciaPartida } from "./motor";
-import { tableroBarajado } from "./motor";
+import {botonIniciarPartida, resetearDivsCartas, sumaIntentos} from "./ui";
+import { iniciaPartida, tableroBarajado } from "./motor";
 
-const botonIniciarPartida = document.getElementById("boton-inicio-partida");
-
-botonIniciarPartida?.addEventListener("click", () => {
-  iniciaPartida(tableroBarajado);
-  resetearDivsCartas();
-});
+if (botonIniciarPartida && botonIniciarPartida instanceof HTMLButtonElement) {
+  botonIniciarPartida?.addEventListener("click", () => {
+    iniciaPartida(tableroBarajado);
+    resetearDivsCartas();
+    sumaIntentos(-1);
+  });
+}

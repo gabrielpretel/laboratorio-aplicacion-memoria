@@ -14,6 +14,8 @@ import {
 
 const divsCarta = document.querySelectorAll(".carta");
 const imagenCarta = document.querySelectorAll("img");
+export const botonIniciarPartida = document.getElementById("boton-inicio-partida");
+let contadorIntentos: number = 0;
 
 export const resetearDivsCartas = () => {
   divsCarta.forEach((div) => {
@@ -28,20 +30,50 @@ export const resetearDivsCartas = () => {
 
 const cambiarClaseLevantada = (carta: number): void => {
   setTimeout(() => {
-    const indiceDivA = `div[data-indice-id="${carta}"]`;
-    const divConIndiceA = document.querySelector(indiceDivA);
-    divConIndiceA?.classList.add("carta-volteada");
-    divConIndiceA?.classList.remove("carta-no-volteada");
+    const indiceDiv = `div[data-indice-id="${carta}"]`;
+    const divConIndice = document.querySelector(indiceDiv);
+
+    if (divConIndice && divConIndice instanceof HTMLDivElement) {
+      divConIndice.classList.add("carta-volteada");
+      divConIndice.classList.remove("carta-no-volteada");
+    }
   }, 100);
 };
 
 const cambiarClaseVolteada = (carta: number): void => {
   setTimeout(() => {
-    const indiceDivA = `div[data-indice-id="${carta}"]`;
-    const divConIndiceA = document.querySelector(indiceDivA);
-    divConIndiceA?.classList.add("carta-no-volteada");
-    divConIndiceA?.classList.remove("carta-volteada");
+    const indiceDiv = `div[data-indice-id="${carta}"]`;
+    const divConIndice = document.querySelector(indiceDiv);
+
+    if (divConIndice && divConIndice instanceof HTMLDivElement) {
+      divConIndice.classList.add("carta-no-volteada");
+      divConIndice.classList.remove("carta-volteada");
+    }
   }, 10);
+};
+
+const pintarMensaje = (texto: string): void => {
+  const mensaje = document.getElementById("mensaje");
+  if (mensaje && mensaje instanceof HTMLParagraphElement) {
+    mensaje.classList.add("mensaje");
+    mensaje.textContent = texto;
+
+    if (texto !== "¡HAS GANADO!") {
+      setTimeout(() => {
+        mensaje.textContent = "";
+        mensaje.classList.remove("mensaje");
+      }, 2000);
+    }
+  }
+};
+
+export const sumaIntentos = (intentos: number) => {
+  contadorIntentos = intentos + 1;
+  const mensajeIntentos = document.getElementById("intentos");
+
+  if (mensajeIntentos && mensajeIntentos instanceof HTMLParagraphElement) {
+    mensajeIntentos.textContent = `${contadorIntentos}`;
+  }
 };
 
 divsCarta.forEach((div) => {
@@ -49,8 +81,7 @@ divsCarta.forEach((div) => {
     const targetCarta = event.target as HTMLElement;
     const indiceId = targetCarta.dataset.indiceId;
     let indiceIdNumero: number | undefined;
-
-    let volteable = false;
+    let volteable: boolean = false;
 
     if (indiceId && indiceId !== undefined) {
       indiceIdNumero = convertirIndiceEnNumero(indiceId);
@@ -92,11 +123,12 @@ divsCarta.forEach((div) => {
             tableroBarajado.indiceCartaVolteadaA,
             tableroBarajado.indiceCartaVolteadaB
           );
+          sumaIntentos(contadorIntentos);
 
           //Comprobamos si se ha ganado la partida
           const partidaCompleta = esPartidaCompleta(tableroBarajado);
           if (partidaCompleta) {
-            console.log("HAS GANADO!");
+            pintarMensaje("¡HAS GANADO!");
           }
           // Cambiamos el estado de la partida para poder continuar
           cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
@@ -110,6 +142,7 @@ divsCarta.forEach((div) => {
             tableroBarajado.indiceCartaVolteadaA,
             tableroBarajado.indiceCartaVolteadaB
           );
+          sumaIntentos(contadorIntentos);
 
           setTimeout(() => {
             if (
@@ -128,7 +161,6 @@ divsCarta.forEach((div) => {
               cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
 
               // Y cambiamos la propiedad esta vuelta de cada carta a false
-
               cambioEstaVueltaFalse(
                 tableroBarajado.indiceCartaVolteadaA,
                 tableroBarajado.indiceCartaVolteadaB
@@ -140,6 +172,10 @@ divsCarta.forEach((div) => {
             }
           }, 1000);
         }
+      }
+    } else {
+      if (!volteable) {
+        pintarMensaje("¡Esa carta ya está levantada!");
       }
     }
 
@@ -181,10 +217,11 @@ const cambiarImagen = (indice: number): void => {
   setTimeout(() => {
     const indiceCapturado = `img[data-indice-id="${indice}"]`;
     const divConIndice = document.querySelector(indiceCapturado);
+
     if (divConIndice && divConIndice instanceof HTMLImageElement) {
       divConIndice.src = tableroBarajado.cartas[indice].imagen;
     }
-  }, 300);
+  }, 200);
 };
 
 const cambiarImagenVuelta = (indiceA: number, indiceB: number): void => {
@@ -208,6 +245,14 @@ const iluminarCartasEncontrada = (indiceA: number, indiceB: number): void => {
   const divConIndiceA = document.querySelector(indiceCapturadoA);
   const indiceCapturadoB = `div[data-indice-id="${indiceB}"]`;
   const divConIndiceB = document.querySelector(indiceCapturadoB);
-  divConIndiceA?.classList.add("encontrada");
-  divConIndiceB?.classList.add("encontrada");
+
+  if (
+    divConIndiceA &&
+    divConIndiceB &&
+    divConIndiceA instanceof HTMLImageElement &&
+    divConIndiceB instanceof HTMLImageElement
+  ) {
+    divConIndiceA.classList.add("encontrada");
+    divConIndiceB.classList.add("encontrada");
+  }
 };

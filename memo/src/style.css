@@ -1,5 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:wght@300;700;900&display=swap");
+
 :root {
-  --primary-font: "Madimi One", sans-serif;
+  --primary-font: "Exo 2", sans-serif;
   --primary-color: #aee2ff;
   --secondary-color: #b799ff;
 }
@@ -8,9 +10,42 @@
   box-sizing: border-box;
 }
 
+body {
+  font-family: var(--primary-font);
+  background-color: #c5fcee;
+}
+
 h1 {
-  color: #b799fe;
+  text-transform: uppercase;
+  color: var(--secondary-color);
+  font-size: 2rem;
+  transform: skew(-10deg);
   text-align: center;
+  font-weight: 900;
+  line-height: 0.5rem;
+  opacity: 0.9;
+}
+
+h2 {
+  color: var(--secondary-color);
+  transform: skew(-10deg);
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 900;
+  margin-bottom: 4rem;
+  opacity: 0.9;
+}
+
+h3 {
+  color: var(--secondary-color);
+  font-family: var(--primary-font);
+  transform: skew(-10deg);
+  rotate: -10deg;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 900;
+  margin: 0px;
+  opacity: 0.9;
 }
 
 #app {
@@ -19,7 +54,61 @@ h1 {
   align-content: center;
   font-family: var(--primary-font);
   height: 100vh;
-  background-color: #c5fcee;
+}
+
+#info {
+  width: fit-content;
+  margin: 0 auto;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-height: 7rem;
+  background-color: transparent;
+
+  & p.mensaje {
+    color: var(--primary-color);
+    width: fit-content;
+    background-color: var(--secondary-color);
+    padding: 0.5rem;
+    border-radius: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out;
+  }
+}
+
+.info-content {
+  width: fit-content;
+  background-color: var(--primary-color);
+  border-radius: 1rem;
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  min-height: 5rem;
+
+  &:hover {
+    box-shadow: 5px 5px 0px 0px rgba(183, 153, 254, 1);
+  }
+
+  p {
+    color: white;
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin: 0px;
+    padding: 1rem;
+    min-width: 5rem;
+  }
+  h3 {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.5rem;
+    opacity: 0.7;
+    border-radius: 1rem;
+    position: absolute;
+    top: -1.5rem;
+  }
 }
 
 .grid {
@@ -104,6 +193,9 @@ h1 {
   margin: 0 auto;
   transition: all ease 0.3s;
   margin-top: 2rem;
+  opacity: 0.9;
+  font-family: var(--primary-font);
+  text-transform: uppercase;
 
   &:hover {
     background-color: var(--primary-color);
@@ -111,5 +203,7 @@ h1 {
     -webkit-box-shadow: 5px 5px 0px 0px rgba(183, 153, 254, 1);
     -moz-box-shadow: 5px 5px 0px 0px rgba(183, 153, 254, 1);
     box-shadow: 5px 5px 0px 0px rgba(183, 153, 254, 1);
+    scale: 1.5;
+    animation: flotar 1s infinite ease-in-out;
   }
 }

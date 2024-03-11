@@ -124,5 +124,4 @@ export const iniciaPartida = (tableroAResetear: Tablero): void => {
     indiceCartaVolteadaA: undefined,
     indiceCartaVolteadaB: undefined,
   };
-  console.log(tableroBarajado);
 };
