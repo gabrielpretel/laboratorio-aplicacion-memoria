@@ -1,3 +1,4 @@
+import { EstadoPartida } from "./modelo";
 import {
   sePuedeVoltearLaCarta,
   sonPareja,
@@ -12,9 +13,20 @@ import {
   cambioEstaVueltaFalse,
 } from "./motor";
 
+/* 
+
+- Hay un error al iniciar partida, si haces cloik dos veces en la misma carta no sale el mensaje de que la carta ya esta levantada
+
+- Si haces triple click, se jode todo
+
+*/
+
+
 const divsCarta = document.querySelectorAll(".carta");
 const imagenCarta = document.querySelectorAll("img");
-export const botonIniciarPartida = document.getElementById("boton-inicio-partida");
+export const botonIniciarPartida = document.getElementById(
+  "boton-inicio-partida"
+);
 let contadorIntentos: number = 0;
 
 export const resetearDivsCartas = () => {
@@ -76,143 +88,6 @@ export const sumaIntentos = (intentos: number) => {
   }
 };
 
-divsCarta.forEach((div) => {
-  div.addEventListener("click", (event): void => {
-    const targetCarta = event.target as HTMLElement;
-    const indiceId = targetCarta.dataset.indiceId;
-    let indiceIdNumero: number | undefined;
-    let volteable: boolean = false;
-
-    if (indiceId && indiceId !== undefined) {
-      indiceIdNumero = convertirIndiceEnNumero(indiceId);
-      volteable = sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero);
-    }
-
-    // Segundo click. Comprobamos el estado de la partida
-    if (
-      volteable &&
-      indiceIdNumero !== undefined &&
-      tableroBarajado.estadoPartida === "UnaCartaLevantada"
-    ) {
-      const cartaB = indiceIdNumero;
-
-      cambiarImagen(cartaB);
-      cambiarClaseLevantada(cartaB);
-
-      //Actualizamos la propiedad estaVuelta de la cartaB
-      cambiarEstaVuelta(cartaB);
-
-      // Añadimos la cartaB al tablero
-      tableroBarajado.indiceCartaVolteadaB = cartaB;
-
-      // Comprobamos si las cartas levantadas son pareja o no
-      if (tableroBarajado.indiceCartaVolteadaA !== undefined) {
-        const siSonPareja = sonPareja(
-          tableroBarajado.indiceCartaVolteadaA,
-          tableroBarajado.indiceCartaVolteadaB,
-          tableroBarajado
-        );
-        //Actualizar la propiedad encontrada de ambas cartas
-        if (siSonPareja) {
-          parejaEncontrada(
-            tableroBarajado,
-            tableroBarajado.indiceCartaVolteadaA,
-            tableroBarajado.indiceCartaVolteadaB
-          );
-          iluminarCartasEncontrada(
-            tableroBarajado.indiceCartaVolteadaA,
-            tableroBarajado.indiceCartaVolteadaB
-          );
-          sumaIntentos(contadorIntentos);
-
-          //Comprobamos si se ha ganado la partida
-          const partidaCompleta = esPartidaCompleta(tableroBarajado);
-          if (partidaCompleta) {
-            pintarMensaje("¡HAS GANADO!");
-          }
-          // Cambiamos el estado de la partida para poder continuar
-          cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
-
-          //Reseteamos los indices
-          resetearIndices();
-          indiceIdNumero = undefined;
-        } else {
-          parejaNoEncontrada(
-            tableroBarajado,
-            tableroBarajado.indiceCartaVolteadaA,
-            tableroBarajado.indiceCartaVolteadaB
-          );
-          sumaIntentos(contadorIntentos);
-
-          setTimeout(() => {
-            if (
-              tableroBarajado.indiceCartaVolteadaA !== undefined &&
-              tableroBarajado.indiceCartaVolteadaB !== undefined
-            ) {
-              //No son pareja, por lo que cambiamos su clase a volteada
-              cambiarClaseVolteada(tableroBarajado.indiceCartaVolteadaA);
-              cambiarClaseVolteada(tableroBarajado.indiceCartaVolteadaB);
-              //Cambiamos la ULR de las imagenes a carta volteada
-              cambiarImagenVuelta(
-                tableroBarajado.indiceCartaVolteadaA,
-                tableroBarajado.indiceCartaVolteadaB
-              );
-              //Cambiamos el estado de la partida a CeroCartasLevantadas
-              cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
-
-              // Y cambiamos la propiedad esta vuelta de cada carta a false
-              cambioEstaVueltaFalse(
-                tableroBarajado.indiceCartaVolteadaA,
-                tableroBarajado.indiceCartaVolteadaB
-              );
-
-              //Reseteamos los indices
-              resetearIndices();
-              indiceIdNumero = undefined;
-            }
-          }, 1000);
-        }
-      }
-    } else {
-      if (!volteable) {
-        pintarMensaje("¡Esa carta ya está levantada!");
-      }
-    }
-
-    // Si es volteable, volteamos la carta, y el estado de la partida es cero cartas levantadas o partida sin iniciar
-    if (
-      volteable &&
-      indiceIdNumero !== undefined &&
-      (tableroBarajado.estadoPartida === "CeroCartasLevantadas" ||
-        tableroBarajado.estadoPartida === "PartidaNoIniciada")
-    ) {
-      //Guardamos el indice en una nueva variable
-      const cartaA = indiceIdNumero;
-
-      cambiarImagen(cartaA);
-      cambiarClaseLevantada(cartaA);
-
-      //Actualizamos la propiedad estaVuelta de la cartaA
-      cambiarEstaVuelta(cartaA);
-
-      //Actualizamos el estado de la partida y añadimos la cartaA al tablero
-      tableroBarajado.indiceCartaVolteadaA = cartaA;
-      cambioEstadoPartida(tableroBarajado, "UnaCartaLevantada");
-    }
-
-    // Tercer click con dos cartas ya levantadas
-
-    if (
-      tableroBarajado.estadoPartida === "UnaCartaLevantada" &&
-      tableroBarajado.indiceCartaVolteadaB &&
-      tableroBarajado.indiceCartaVolteadaA !== undefined &&
-      tableroBarajado.indiceCartaVolteadaB !== undefined
-    ) {
-      cambioEstadoPartida(tableroBarajado, "DosCartasLevantadas");
-    }
-  });
-});
-
 const cambiarImagen = (indice: number): void => {
   setTimeout(() => {
     const indiceCapturado = `img[data-indice-id="${indice}"]`;
@@ -229,6 +104,7 @@ const cambiarImagenVuelta = (indiceA: number, indiceB: number): void => {
   const divConIndiceA = document.querySelector(indiceCapturadoA);
   const indiceCapturadoB = `img[data-indice-id="${indiceB}"]`;
   const divConIndiceB = document.querySelector(indiceCapturadoB);
+
   if (
     divConIndiceA &&
     divConIndiceB &&
@@ -249,10 +125,133 @@ const iluminarCartasEncontrada = (indiceA: number, indiceB: number): void => {
   if (
     divConIndiceA &&
     divConIndiceB &&
-    divConIndiceA instanceof HTMLImageElement &&
-    divConIndiceB instanceof HTMLImageElement
+    divConIndiceA instanceof HTMLDivElement &&
+    divConIndiceB instanceof HTMLDivElement
   ) {
     divConIndiceA.classList.add("encontrada");
     divConIndiceB.classList.add("encontrada");
   }
+};
+
+// let procesandoCartas = false;
+
+divsCarta.forEach((div) => {
+  div.addEventListener("click", (event): void => {
+    const targetCarta = event.target as HTMLElement;
+    const indiceId = targetCarta.dataset.indiceId;
+    let indiceIdNumero: number = 0;
+
+    // if (procesandoCartas) return;
+
+    if (indiceId) {
+      indiceIdNumero = convertirIndiceEnNumero(indiceId);
+    }
+
+    !sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero) &&
+      pintarMensaje("Esa carta ya está levantada");
+
+    manejarClickCarta(indiceIdNumero);
+  });
+});
+
+const manejarClickCarta = (indiceIdNumero: number) => {
+  const { estadoPartida } = tableroBarajado;
+
+  if (estadoPartida === "DosCartasLevantadas") return;
+
+  if (tableroBarajado.estadoPartida === "DosCartasLevantadas") return;
+
+  // Comprobamos el estado y si es volteable ejecutamos el volteo
+  if (
+    estadoPartida === "PartidaNoIniciada" ||
+    estadoPartida === "CeroCartasLevantadas"
+  ) {
+    if (sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero)) {
+      prepararCartaParaVoltear(indiceIdNumero, "UnaCartaLevantada");
+    }
+  } else if (estadoPartida === "UnaCartaLevantada") {
+    if (tableroBarajado.indiceCartaVolteadaA !== indiceIdNumero) {
+      prepararCartaParaVoltear(indiceIdNumero, "DosCartasLevantadas");
+      verificarPareja();
+    }
+  }
+};
+
+const prepararCartaParaVoltear = (
+  indiceIdNumero: number,
+  nuevoEstado: EstadoPartida
+) => {
+  //Guardamos el indice en una nueva variable
+  cambiarImagen(indiceIdNumero);
+  cambiarClaseLevantada(indiceIdNumero);
+
+  //Actualizamos la propiedad estaVuelta de la cartaA
+  cambiarEstaVuelta(indiceIdNumero);
+
+  //Guardamos el indice en carta A o B
+  if (nuevoEstado === "UnaCartaLevantada") {
+    tableroBarajado.indiceCartaVolteadaA = indiceIdNumero;
+  } else {
+    tableroBarajado.indiceCartaVolteadaB = indiceIdNumero;
+  }
+
+  cambioEstadoPartida(tableroBarajado, nuevoEstado);
+};
+
+const verificarPareja = () => {
+  const { indiceCartaVolteadaA, indiceCartaVolteadaB } = tableroBarajado;
+  // procesandoCartas = true;
+
+  if (indiceCartaVolteadaA !== undefined && indiceCartaVolteadaB) {
+    const sonParejaResultado = sonPareja(
+      indiceCartaVolteadaA,
+      indiceCartaVolteadaB,
+      tableroBarajado
+    );
+    if (sonParejaResultado) {
+      parejaEncontrada(
+        tableroBarajado,
+        indiceCartaVolteadaA,
+        indiceCartaVolteadaB
+      );
+      iluminarCartasEncontrada(indiceCartaVolteadaA, indiceCartaVolteadaB);
+      sumaIntentos(contadorIntentos);
+      // procesandoCartas = false;
+
+      // Comprobamos la partida
+      if (esPartidaCompleta(tableroBarajado))
+        pintarMensaje("¡HAS GANADO LA PARTIDA!");
+        // procesandoCartas = false;
+    } else {
+      parejaNoEncontrada(
+        tableroBarajado,
+        indiceCartaVolteadaA,
+        indiceCartaVolteadaB
+      );
+      sumaIntentos(contadorIntentos);
+      setTimeout(() => {
+        revertirCartas(indiceCartaVolteadaA, indiceCartaVolteadaB);
+        // procesandoCartas = false;
+      }, 1000);
+    }
+    
+    //Reseteamos los indices y estado de partida
+    resetearIndices();
+    cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
+  }else{
+    // procesandoCartas = false;
+  }
+};
+
+const revertirCartas = (
+  indiceCartaVolteadaA: number,
+  indiceCartaVolteadaB: number
+) => {
+  //No son pareja, por lo que cambiamos su clase a volteada y reseteamos url
+  cambiarClaseVolteada(indiceCartaVolteadaA);
+  cambiarClaseVolteada(indiceCartaVolteadaB);
+  cambiarImagenVuelta(indiceCartaVolteadaA, indiceCartaVolteadaB);
+
+  // Y cambiamos la propiedad esta vuelta de cada carta a false
+  cambioEstaVueltaFalse(indiceCartaVolteadaA, indiceCartaVolteadaB);
 };

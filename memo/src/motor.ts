@@ -104,6 +104,8 @@ export const parejaNoEncontrada = (
   indiceB: number
 ): void => {
   tablero.cartas[indiceA].estaVuelta = false;
+  tablero.cartas[indiceA].encontrada = false;
+  tablero.cartas[indiceB].estaVuelta = false;
   tablero.cartas[indiceB].encontrada = false;
 };
 
