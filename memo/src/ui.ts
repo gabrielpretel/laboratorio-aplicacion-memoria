@@ -15,12 +15,9 @@ import {
 
 /* 
 
-- Hay un error al iniciar partida, si haces cloik dos veces en la misma carta no sale el mensaje de que la carta ya esta levantada
-
-- Si haces triple click, se jode todo
+- Hay un error al iniciar partida, si haces click dos veces en la misma carta no sale el mensaje de que la carta ya esta levantada
 
 */
-
 
 const divsCarta = document.querySelectorAll(".carta");
 const imagenCarta = document.querySelectorAll("img");
@@ -133,15 +130,11 @@ const iluminarCartasEncontrada = (indiceA: number, indiceB: number): void => {
   }
 };
 
-// let procesandoCartas = false;
-
 divsCarta.forEach((div) => {
   div.addEventListener("click", (event): void => {
     const targetCarta = event.target as HTMLElement;
     const indiceId = targetCarta.dataset.indiceId;
     let indiceIdNumero: number = 0;
-
-    // if (procesandoCartas) return;
 
     if (indiceId) {
       indiceIdNumero = convertirIndiceEnNumero(indiceId);
@@ -158,8 +151,6 @@ const manejarClickCarta = (indiceIdNumero: number) => {
   const { estadoPartida } = tableroBarajado;
 
   if (estadoPartida === "DosCartasLevantadas") return;
-
-  if (tableroBarajado.estadoPartida === "DosCartasLevantadas") return;
 
   // Comprobamos el estado y si es volteable ejecutamos el volteo
   if (
@@ -200,7 +191,6 @@ const prepararCartaParaVoltear = (
 
 const verificarPareja = () => {
   const { indiceCartaVolteadaA, indiceCartaVolteadaB } = tableroBarajado;
-  // procesandoCartas = true;
 
   if (indiceCartaVolteadaA !== undefined && indiceCartaVolteadaB) {
     const sonParejaResultado = sonPareja(
@@ -216,12 +206,10 @@ const verificarPareja = () => {
       );
       iluminarCartasEncontrada(indiceCartaVolteadaA, indiceCartaVolteadaB);
       sumaIntentos(contadorIntentos);
-      // procesandoCartas = false;
 
       // Comprobamos la partida
       if (esPartidaCompleta(tableroBarajado))
         pintarMensaje("¡HAS GANADO LA PARTIDA!");
-        // procesandoCartas = false;
     } else {
       parejaNoEncontrada(
         tableroBarajado,
@@ -231,15 +219,14 @@ const verificarPareja = () => {
       sumaIntentos(contadorIntentos);
       setTimeout(() => {
         revertirCartas(indiceCartaVolteadaA, indiceCartaVolteadaB);
-        // procesandoCartas = false;
       }, 1000);
     }
-    
-    //Reseteamos los indices y estado de partida
+
+    //Reseteamos los indices y estado de partida, timeOut para el tercer click
     resetearIndices();
-    cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
-  }else{
-    // procesandoCartas = false;
+    setTimeout(() => {
+      cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
+    }, 1000);
   }
 };
 
