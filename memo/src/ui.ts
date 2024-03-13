@@ -162,14 +162,18 @@ const iluminarCartasEncontrada = (indiceA: number, indiceB: number): void => {
 const verificarPareja = () => {
   const { indiceCartaVolteadaA, indiceCartaVolteadaB } = tableroBarajado;
 
-  if (indiceCartaVolteadaA !== undefined && indiceCartaVolteadaB) {
+  if (
+    indiceCartaVolteadaA !== undefined && indiceCartaVolteadaA !== null &&
+    indiceCartaVolteadaB !== undefined && indiceCartaVolteadaB !== null
+  ) {
     sonPareja(indiceCartaVolteadaA, indiceCartaVolteadaB, tableroBarajado)
       ? siSonPareja()
       : noSonPareja();
-    //Reseteamos los indices y estado de partida
+    //Reseteamos los índices y estado de partida
     resetIndicesYEstado();
   }
 };
+
 
 const siSonPareja = () => {
   const { indiceCartaVolteadaA, indiceCartaVolteadaB } = tableroBarajado;
