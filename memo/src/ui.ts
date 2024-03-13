@@ -15,7 +15,7 @@ import {
 
 /* 
 
-- Hay un error al iniciar partida, si haces click dos veces en la misma carta no sale el mensaje de que la carta ya esta levantada
+- Hay un error al pulsar el boton empezar partida, si haces click dos veces en la misma carta no sale el mensaje de que la carta ya esta levantada. Esto no ocurre si no se pulsa.
 
 */
 
@@ -35,6 +35,85 @@ export const resetearDivsCartas = () => {
   imagenCarta.forEach((img) => {
     img.src = "";
   });
+};
+
+// Captura de la carta clickada y comprobación de partida
+divsCarta.forEach((div) => {
+  div.addEventListener("click", (event): void => {
+    const targetCarta = event.target as HTMLElement;
+    const indiceId = targetCarta.dataset.indiceId;
+    let indiceIdNumero: number = 0;
+
+    if (indiceId) {
+      indiceIdNumero = convertirIndiceEnNumero(indiceId);
+    }
+
+    if (
+      !sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero) &&
+      tableroBarajado.estadoPartida === "UnaCartaLevantada"
+    ) {
+      pintarMensaje("Esa carta ya está levantada");
+    }
+
+    manejarClickCarta(indiceIdNumero);
+  });
+});
+
+const manejarClickCarta = (indiceIdNumero: number) => {
+  const { estadoPartida } = tableroBarajado;
+
+  if (estadoPartida === "DosCartasLevantadas") return;
+
+  // Comprobamos el estado y si es volteable ejecutamos el volteo
+  if (
+    estadoPartida === "PartidaNoIniciada" ||
+    estadoPartida === "CeroCartasLevantadas"
+  ) {
+    if (sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero)) {
+      prepararCartaParaVoltear(indiceIdNumero, "UnaCartaLevantada");
+    }
+  } else if (estadoPartida === "UnaCartaLevantada") {
+    if (tableroBarajado.indiceCartaVolteadaA !== indiceIdNumero) {
+      prepararCartaParaVoltear(indiceIdNumero, "DosCartasLevantadas");
+      verificarPareja();
+    }
+  }
+};
+
+const pintarMensaje = (texto: string): void => {
+  const mensaje = document.getElementById("mensaje");
+  if (mensaje && mensaje instanceof HTMLParagraphElement) {
+    mensaje.classList.add("mensaje");
+    mensaje.textContent = texto;
+
+    if (texto !== "¡HAS GANADO!") {
+      setTimeout(() => {
+        mensaje.textContent = "";
+        mensaje.classList.remove("mensaje");
+      }, 2000);
+    }
+  }
+};
+
+const prepararCartaParaVoltear = (
+  indiceIdNumero: number,
+  nuevoEstado: EstadoPartida
+) => {
+  //Guardamos el indice en una nueva variable
+  cambiarImagen(indiceIdNumero);
+  cambiarClaseLevantada(indiceIdNumero);
+
+  //Actualizamos la propiedad estaVuelta de la cartaA
+  cambiarEstaVuelta(indiceIdNumero);
+
+  //Guardamos el indice en carta A o B
+  if (nuevoEstado === "UnaCartaLevantada") {
+    tableroBarajado.indiceCartaVolteadaA = indiceIdNumero;
+  } else {
+    tableroBarajado.indiceCartaVolteadaB = indiceIdNumero;
+  }
+
+  cambioEstadoPartida(tableroBarajado, nuevoEstado);
 };
 
 const cambiarClaseLevantada = (carta: number): void => {
@@ -61,24 +140,10 @@ const cambiarClaseVolteada = (carta: number): void => {
   }, 10);
 };
 
-const pintarMensaje = (texto: string): void => {
-  const mensaje = document.getElementById("mensaje");
-  if (mensaje && mensaje instanceof HTMLParagraphElement) {
-    mensaje.classList.add("mensaje");
-    mensaje.textContent = texto;
-
-    if (texto !== "¡HAS GANADO!") {
-      setTimeout(() => {
-        mensaje.textContent = "";
-        mensaje.classList.remove("mensaje");
-      }, 2000);
-    }
-  }
-};
 
 export const sumaIntentos = (intentos: number) => {
-  contadorIntentos = intentos + 1;
   const mensajeIntentos = document.getElementById("intentos");
+  contadorIntentos = intentos + 1;
 
   if (mensajeIntentos && mensajeIntentos instanceof HTMLParagraphElement) {
     mensajeIntentos.textContent = `${contadorIntentos}`;
@@ -130,65 +195,6 @@ const iluminarCartasEncontrada = (indiceA: number, indiceB: number): void => {
   }
 };
 
-divsCarta.forEach((div) => {
-  div.addEventListener("click", (event): void => {
-    const targetCarta = event.target as HTMLElement;
-    const indiceId = targetCarta.dataset.indiceId;
-    let indiceIdNumero: number = 0;
-
-    if (indiceId) {
-      indiceIdNumero = convertirIndiceEnNumero(indiceId);
-    }
-
-    !sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero) &&
-      pintarMensaje("Esa carta ya está levantada");
-
-    manejarClickCarta(indiceIdNumero);
-  });
-});
-
-const manejarClickCarta = (indiceIdNumero: number) => {
-  const { estadoPartida } = tableroBarajado;
-
-  if (estadoPartida === "DosCartasLevantadas") return;
-
-  // Comprobamos el estado y si es volteable ejecutamos el volteo
-  if (
-    estadoPartida === "PartidaNoIniciada" ||
-    estadoPartida === "CeroCartasLevantadas"
-  ) {
-    if (sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero)) {
-      prepararCartaParaVoltear(indiceIdNumero, "UnaCartaLevantada");
-    }
-  } else if (estadoPartida === "UnaCartaLevantada") {
-    if (tableroBarajado.indiceCartaVolteadaA !== indiceIdNumero) {
-      prepararCartaParaVoltear(indiceIdNumero, "DosCartasLevantadas");
-      verificarPareja();
-    }
-  }
-};
-
-const prepararCartaParaVoltear = (
-  indiceIdNumero: number,
-  nuevoEstado: EstadoPartida
-) => {
-  //Guardamos el indice en una nueva variable
-  cambiarImagen(indiceIdNumero);
-  cambiarClaseLevantada(indiceIdNumero);
-
-  //Actualizamos la propiedad estaVuelta de la cartaA
-  cambiarEstaVuelta(indiceIdNumero);
-
-  //Guardamos el indice en carta A o B
-  if (nuevoEstado === "UnaCartaLevantada") {
-    tableroBarajado.indiceCartaVolteadaA = indiceIdNumero;
-  } else {
-    tableroBarajado.indiceCartaVolteadaB = indiceIdNumero;
-  }
-
-  cambioEstadoPartida(tableroBarajado, nuevoEstado);
-};
-
 const verificarPareja = () => {
   const { indiceCartaVolteadaA, indiceCartaVolteadaB } = tableroBarajado;
 
@@ -226,7 +232,7 @@ const verificarPareja = () => {
     resetearIndices();
     setTimeout(() => {
       cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
-    }, 1000);
+    }, 1100);
   }
 };
 

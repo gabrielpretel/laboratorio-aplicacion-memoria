@@ -16,7 +16,7 @@ export let tableroBarajado = {
   cartas: cartasBarajadas,
 };
 
-let { cartas } = tableroBarajado;
+const { cartas } = tableroBarajado;
 
 export const cambioEstadoPartida = (
   tablero: Tablero,
@@ -77,10 +77,9 @@ export const sonPareja = (
   indiceB: number,
   tableroBarajado: Tablero
 ): boolean => {
-  return (
-    tableroBarajado.cartas[indiceA].idFoto ===
-    tableroBarajado.cartas[indiceB].idFoto
-  );
+  const { cartas } = tableroBarajado;
+
+  return cartas[indiceA].idFoto === cartas[indiceB].idFoto;
 };
 
 /*
