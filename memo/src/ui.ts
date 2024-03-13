@@ -11,12 +11,6 @@ import {
   cambioEstaVueltaFalse,
 } from "./motor";
 
-/* 
-
-- Hay un error al pulsar el boton empezar partida, si haces click dos veces en la misma carta no sale el mensaje de que la carta ya esta levantada. Esto no ocurre si no se pulsa.
-
-*/
-
 export const divsCarta = document.querySelectorAll(".carta");
 const imagenCarta = document.querySelectorAll("img");
 export const botonIniciarPartida = document.getElementById(
@@ -73,11 +67,8 @@ const prepararCartaParaVoltear = (
   indiceIdNumero: number,
   nuevoEstado: EstadoPartida
 ) => {
-  //Guardamos el indice en una nueva variable
   cambiarImagen(indiceIdNumero);
   cambiarClaseLevantada(indiceIdNumero);
-
-  //Actualizamos la propiedad estaVuelta de la cartaA
   cambiarEstaVuelta(indiceIdNumero);
 
   //Guardamos el indice en carta A o B
@@ -172,53 +163,75 @@ const verificarPareja = () => {
   const { indiceCartaVolteadaA, indiceCartaVolteadaB } = tableroBarajado;
 
   if (indiceCartaVolteadaA !== undefined && indiceCartaVolteadaB) {
-    const sonParejaResultado = sonPareja(
-      indiceCartaVolteadaA,
-      indiceCartaVolteadaB,
-      tableroBarajado
-    );
-    if (sonParejaResultado) {
-      parejaEncontrada(
-        tableroBarajado,
-        indiceCartaVolteadaA,
-        indiceCartaVolteadaB
-      );
-      iluminarCartasEncontrada(indiceCartaVolteadaA, indiceCartaVolteadaB);
-      sumaIntentos(contadorIntentos);
-
-      // Comprobamos la partida
-      if (esPartidaCompleta(tableroBarajado))
-        pintarMensaje("¡HAS GANADO LA PARTIDA!");
-    } else {
-      parejaNoEncontrada(
-        tableroBarajado,
-        indiceCartaVolteadaA,
-        indiceCartaVolteadaB
-      );
-      sumaIntentos(contadorIntentos);
-      setTimeout(() => {
-        revertirCartas(indiceCartaVolteadaA, indiceCartaVolteadaB);
-      }, 1000);
-    }
-
-    //Reseteamos los indices y estado de partida, timeOut para el tercer click
-    tableroBarajado.indiceCartaVolteadaA = undefined;
-    tableroBarajado.indiceCartaVolteadaB = undefined;
-    setTimeout(() => {
-      cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
-    }, 1100);
+    sonPareja(indiceCartaVolteadaA, indiceCartaVolteadaB, tableroBarajado)
+      ? siSonPareja()
+      : noSonPareja();
+    //Reseteamos los indices y estado de partida
+    resetIndicesYEstado();
   }
+};
+
+const siSonPareja = () => {
+  const { indiceCartaVolteadaA, indiceCartaVolteadaB } = tableroBarajado;
+
+  if (
+    indiceCartaVolteadaA !== null &&
+    indiceCartaVolteadaA !== undefined &&
+    indiceCartaVolteadaB !== null &&
+    indiceCartaVolteadaB !== undefined
+  ) {
+    parejaEncontrada(
+      tableroBarajado,
+      indiceCartaVolteadaA,
+      indiceCartaVolteadaB
+    );
+    iluminarCartasEncontrada(indiceCartaVolteadaA, indiceCartaVolteadaB);
+    sumaIntentos(contadorIntentos);
+    comprobarPartida();
+  }
+};
+
+const noSonPareja = () => {
+  const { indiceCartaVolteadaA, indiceCartaVolteadaB } = tableroBarajado;
+
+  if (
+    indiceCartaVolteadaA !== null &&
+    indiceCartaVolteadaA !== undefined &&
+    indiceCartaVolteadaB !== null &&
+    indiceCartaVolteadaB !== undefined
+  ) {
+    parejaNoEncontrada(
+      tableroBarajado,
+      indiceCartaVolteadaA,
+      indiceCartaVolteadaB
+    );
+    setTimeout(() => {
+      revertirCartas(indiceCartaVolteadaA, indiceCartaVolteadaB);
+    }, 1000);
+    sumaIntentos(contadorIntentos);
+  }
+};
+
+const comprobarPartida = () => {
+  if (esPartidaCompleta(tableroBarajado))
+    pintarMensaje("¡HAS GANADO LA PARTIDA!");
+};
+
+const resetIndicesYEstado = () => {
+  tableroBarajado.indiceCartaVolteadaA = undefined;
+  tableroBarajado.indiceCartaVolteadaB = undefined;
+  setTimeout(() => {
+    cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
+  }, 1100);
 };
 
 const revertirCartas = (
   indiceCartaVolteadaA: number,
   indiceCartaVolteadaB: number
 ) => {
-  //No son pareja, por lo que cambiamos su clase a volteada y reseteamos url
+  //No son pareja, por lo que cambiamos su clase a volteada y reseteamos url, y esta vuelta a false
   cambiarClaseVolteada(indiceCartaVolteadaA);
   cambiarClaseVolteada(indiceCartaVolteadaB);
   cambiarImagenVuelta(indiceCartaVolteadaA, indiceCartaVolteadaB);
-
-  // Y cambiamos la propiedad esta vuelta de cada carta a false
   cambioEstaVueltaFalse(indiceCartaVolteadaA, indiceCartaVolteadaB);
 };

@@ -30,8 +30,8 @@ export const convertirIndiceEnNumero = (indice: string): number => {
 };
 
 export const cambiarEstaVuelta = (carta: number) => {
-  cartas[carta] = {
-    ...cartas[carta],
+  tableroBarajado.cartas[carta] = {
+    ...tableroBarajado.cartas[carta],
     estaVuelta: true,
   };
 };
@@ -55,13 +55,11 @@ export const sePuedeVoltearLaCarta = (
   indice: number
 ): boolean => {
   if (indice !== undefined && tableroBarajado.cartas[indice]) {
-    const carta = tableroBarajado.cartas[indice];
     return (
-      (carta.estaVuelta === false && carta.encontrada === false) ||
-      tableroBarajado.estadoPartida === "DosCartasLevantadas"
+      tableroBarajado.cartas[indice].estaVuelta === false &&
+      tableroBarajado.cartas[indice].encontrada === false
     );
   }
-
   return false;
 };
 

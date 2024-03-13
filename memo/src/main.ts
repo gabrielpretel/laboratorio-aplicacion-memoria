@@ -33,9 +33,12 @@ const mapDivsCartas = () => {
         if (indiceId) {
           indiceIdNumero = convertirIndiceEnNumero(indiceId);
         }
-
+        const volteable = sePuedeVoltearLaCarta(
+          tableroBarajado,
+          indiceIdNumero
+        );
         if (
-          !sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero) &&
+          !volteable &&
           tableroBarajado.estadoPartida === "UnaCartaLevantada"
         ) {
           pintarMensaje("Esa carta ya está levantada");
