@@ -48,11 +48,6 @@ export const cambioEstaVueltaFalse = (
   }
 };
 
-export const resetearIndices = (): void => {
-  tableroBarajado.indiceCartaVolteadaA = undefined;
-  tableroBarajado.indiceCartaVolteadaB = undefined;
-};
-
 // Una carta se puede voltear si no está encontrada y no está ya volteada, o no hay dos cartas ya volteadas
 
 export const sePuedeVoltearLaCarta = (

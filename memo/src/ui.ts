@@ -7,9 +7,7 @@ import {
   parejaNoEncontrada,
   esPartidaCompleta,
   cambioEstadoPartida,
-  convertirIndiceEnNumero,
   cambiarEstaVuelta,
-  resetearIndices,
   cambioEstaVueltaFalse,
 } from "./motor";
 
@@ -19,7 +17,7 @@ import {
 
 */
 
-const divsCarta = document.querySelectorAll(".carta");
+export const divsCarta = document.querySelectorAll(".carta");
 const imagenCarta = document.querySelectorAll("img");
 export const botonIniciarPartida = document.getElementById(
   "boton-inicio-partida"
@@ -37,32 +35,8 @@ export const resetearDivsCartas = () => {
   });
 };
 
-// Captura de la carta clickada y comprobación de partida
-divsCarta.forEach((div) => {
-  div.addEventListener("click", (event): void => {
-    const targetCarta = event.target as HTMLElement;
-    const indiceId = targetCarta.dataset.indiceId;
-    let indiceIdNumero: number = 0;
-
-    if (indiceId) {
-      indiceIdNumero = convertirIndiceEnNumero(indiceId);
-    }
-
-    if (
-      !sePuedeVoltearLaCarta(tableroBarajado, indiceIdNumero) &&
-      tableroBarajado.estadoPartida === "UnaCartaLevantada"
-    ) {
-      pintarMensaje("Esa carta ya está levantada");
-    }
-
-    manejarClickCarta(indiceIdNumero);
-  });
-});
-
-const manejarClickCarta = (indiceIdNumero: number) => {
+export const manejarClickCarta = (indiceIdNumero: number) => {
   const { estadoPartida } = tableroBarajado;
-
-  if (estadoPartida === "DosCartasLevantadas") return;
 
   // Comprobamos el estado y si es volteable ejecutamos el volteo
   if (
@@ -80,7 +54,7 @@ const manejarClickCarta = (indiceIdNumero: number) => {
   }
 };
 
-const pintarMensaje = (texto: string): void => {
+export const pintarMensaje = (texto: string): void => {
   const mensaje = document.getElementById("mensaje");
   if (mensaje && mensaje instanceof HTMLParagraphElement) {
     mensaje.classList.add("mensaje");
@@ -139,7 +113,6 @@ const cambiarClaseVolteada = (carta: number): void => {
     }
   }, 10);
 };
-
 
 export const sumaIntentos = (intentos: number) => {
   const mensajeIntentos = document.getElementById("intentos");
@@ -229,7 +202,8 @@ const verificarPareja = () => {
     }
 
     //Reseteamos los indices y estado de partida, timeOut para el tercer click
-    resetearIndices();
+    tableroBarajado.indiceCartaVolteadaA = undefined;
+    tableroBarajado.indiceCartaVolteadaB = undefined;
     setTimeout(() => {
       cambioEstadoPartida(tableroBarajado, "CeroCartasLevantadas");
     }, 1100);
